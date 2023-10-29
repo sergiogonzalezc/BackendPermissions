@@ -17,17 +17,15 @@ namespace BackendPermissions.Api.Controllers
     [ApiController]
     public class PermissionsController : ControllerBase
     {
-
         private readonly IPermissionsApplication _permissionsService;
         private readonly ILogger<PermissionsController> _logger;
-        //private readonly IProducer<Null, string> _producer;
-
+        
         private BackendPermissions.Api.Model.Error err = new BackendPermissions.Api.Model.Error
         {
             Codigo = StatusCodes.Status400BadRequest
         };
 
-        public PermissionsController(IPermissionsApplication permissionsServices, ILogger<PermissionsController> logger/*, IProducer<Null, string> producer*/)
+        public PermissionsController(IPermissionsApplication permissionsServices, ILogger<PermissionsController> logger)
         {
             _permissionsService = permissionsServices;
             _logger = logger;
@@ -100,7 +98,7 @@ namespace BackendPermissions.Api.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("RequestPermission")]
-        [ProducesResponseType(typeof(List<BackendPermissions.Application.Model.Permissions>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RequestPermission([FromBody] InputRequestPermission input)
         {
@@ -138,7 +136,7 @@ namespace BackendPermissions.Api.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("ModifyPermission")]
-        [ProducesResponseType(typeof(List<BackendPermissions.Application.Model.Permissions>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ModifyPermission([FromBody] InputModifyPermission input)
         {
@@ -185,7 +183,7 @@ namespace BackendPermissions.Api.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("InsertNewPermission")]
-        [ProducesResponseType(typeof(List<BackendPermissions.Application.Model.Permissions>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> InsertNewPermission([FromBody] InputCreatePermission input)
         {

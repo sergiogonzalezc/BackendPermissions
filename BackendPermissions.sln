@@ -17,6 +17,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackendPermissions.Producer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackendPermissions.ConsumerService", "BackendPermissions.ConsumerService\BackendPermissions.ConsumerService.csproj", "{B57E1D98-1C68-4C69-BC1A-F250BE8801F9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{C754C90E-0235-4FCC-A25C-9D3A844DF3CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendPermissions.Api.UnitTest", "BackendPermissions.Api.Test\BackendPermissions.Api.UnitTest.csproj", "{16B0EAEE-69D7-452B-92BC-8785EF375E50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +51,10 @@ Global
 		{B57E1D98-1C68-4C69-BC1A-F250BE8801F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B57E1D98-1C68-4C69-BC1A-F250BE8801F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B57E1D98-1C68-4C69-BC1A-F250BE8801F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16B0EAEE-69D7-452B-92BC-8785EF375E50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16B0EAEE-69D7-452B-92BC-8785EF375E50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16B0EAEE-69D7-452B-92BC-8785EF375E50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16B0EAEE-69D7-452B-92BC-8785EF375E50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,6 +62,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{32ECB936-8AAD-4364-B30A-05E2071E44F7} = {833FC5E6-6DDC-43A6-8F02-7C527CD8B244}
 		{B57E1D98-1C68-4C69-BC1A-F250BE8801F9} = {833FC5E6-6DDC-43A6-8F02-7C527CD8B244}
+		{16B0EAEE-69D7-452B-92BC-8785EF375E50} = {C754C90E-0235-4FCC-A25C-9D3A844DF3CB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {10F16A29-EDC6-4285-B0B7-BCA961D77EFE}
