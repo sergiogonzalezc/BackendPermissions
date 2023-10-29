@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BackendPermissions.Application.ConfiguracionApi
 {
-    internal class ApiAgenda : BaseApi
+    internal class ApiPermission : BaseApi
     {
     }
 }

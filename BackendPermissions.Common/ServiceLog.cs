@@ -12,7 +12,7 @@ namespace BackendPermissions.Common
     /// <summary>
     /// Clase que maneja el Log
     /// </summary>
-    public class GestorLog
+    public class ServiceLog
     {
         public static void Write(LogType logType, Exception ex, string category, string message)
         {

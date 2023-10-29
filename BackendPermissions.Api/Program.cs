@@ -17,6 +17,8 @@ using NLog;
 using System.Diagnostics;
 using System.Reflection;
 using BackendPermissions.Common;
+using Confluent.Kafka;
+using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace BackendPermissions.Api
 {
@@ -33,16 +35,16 @@ namespace BackendPermissions.Api
                 //builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
             }
 
-            
+
             // Add services to the container.
             builder.Services.AddScoped<IPermissionsApplication, PermissionsApplication>();
             builder.Services.AddScoped<IPermissionsRepository, PermissionsEFRepository>();
-       
+
             builder.Services.AddCors();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-                      
+
 
             builder.Services.AddControllers(options =>
             {
@@ -54,10 +56,10 @@ namespace BackendPermissions.Api
                 options.MaxAge = TimeSpan.FromDays(365);
                 options.IncludeSubDomains = true;
             });
-
+            
             var app = builder.Build();
 
-            // Se define cultura español CL
+            // define culture spanish CL
             var cultureInfo = new CultureInfo("es-CL");
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
@@ -104,14 +106,14 @@ namespace BackendPermissions.Api
             }
 
             app.UseExceptionHandler("/error");
-                        
+
             app.UseRouting();
 
             app.UseResponseCaching();
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseHttpsRedirection();            
+            app.UseHttpsRedirection();
 
             app.MapControllers();
 
@@ -134,7 +136,7 @@ namespace BackendPermissions.Api
 
             GlobalDiagnosticsContext.Set("ProcessID", "PID " + currentProcess.Id.ToString());
 
-            GestorLog.Write(Common.Enum.LogType.WebSite, System.Diagnostics.TraceLevel.Info, "INICIO_API", "===== INICIO API [BackendPermissions.Api] =====");
+            ServiceLog.Write(Common.Enum.LogType.WebSite, System.Diagnostics.TraceLevel.Info, "INICIO_API", "===== INICIO API [BackendPermissions.Api] =====");
         }
     }
 }
