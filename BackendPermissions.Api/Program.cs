@@ -26,8 +26,6 @@ namespace BackendPermissions.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            string secretKey = builder.Configuration.GetSection("JwtConfig").GetValue<string>("SecretKey");
-
             string envName = builder.Environment.EnvironmentName;
 
             if (envName != "Development" && envName != "qa")
@@ -35,7 +33,7 @@ namespace BackendPermissions.Api
                 //builder.Services.AddTransient<ProblemDetailsFactory, CustomProblemDetailsFactory>();
             }
 
-
+            
             // Add services to the container.
             builder.Services.AddScoped<IPermissionsApplication, PermissionsApplication>();
             builder.Services.AddScoped<IPermissionsRepository, PermissionsEFRepository>();
@@ -96,11 +94,17 @@ namespace BackendPermissions.Api
             else
             {
                 //Solo habilitado en producción
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                });
+
                 app.UseHsts();
             }
 
             app.UseExceptionHandler("/error");
-
+                        
             app.UseRouting();
 
             app.UseResponseCaching();
