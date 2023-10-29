@@ -21,6 +21,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{C754
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendPermissions.Api.UnitTest", "BackendPermissions.Api.Test\BackendPermissions.Api.UnitTest.csproj", "{16B0EAEE-69D7-452B-92BC-8785EF375E50}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsBD", "ScriptsBD", "{D8408775-7E4F-4092-89B1-8CCE467194E5}"
+	ProjectSection(SolutionItems) = preProject
+		..\ScriptsBD\1_Create_BD_and_tables.sql = ..\ScriptsBD\1_Create_BD_and_tables.sql
+		..\ScriptsBD\2_Script_insert_data.sql = ..\ScriptsBD\2_Script_insert_data.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
