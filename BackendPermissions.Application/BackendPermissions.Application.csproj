@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Business\LoginBusiness.cs" />
+    <Compile Remove="Business\ScheduleBusiness.cs" />
+    <Compile Remove="IntegracionData\IEspecialidadRepository.cs" />
+    <Compile Remove="IntegracionData\IMedicoRepository.cs" />
+    <Compile Remove="IntegracionData\ISucursalRepository.cs" />
+    <Compile Remove="Interface\IEspecialidadService.cs" />
+    <Compile Remove="Interface\IMedicoService.cs" />
+    <Compile Remove="Interface\ISucursalService.cs" />
+    <Compile Remove="Services\EspecialidadService.cs" />
+    <Compile Remove="Services\MedicoService.cs" />
+    <Compile Remove="Services\SucursalService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BackendPermissions.Common\BackendPermissions.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Business\" />
+  </ItemGroup>
+
+</Project>
