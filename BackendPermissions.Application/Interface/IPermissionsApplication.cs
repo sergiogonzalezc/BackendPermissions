@@ -26,9 +26,8 @@ namespace BackendPermissions.Application.Interface
         /// </summary>
         /// <param name="name"></param>
         /// <param name="lastName"></param>
-        /// <param name="permissionType"></param>
         /// <returns></returns>
-        Task<bool> ExistsPermissionByNameAndType(string name, string lastName, int permissionType);
+        Task<bool> ExistsPermissionByNameAndType(string name, string lastName);
 
         /// <summary>
         /// 
@@ -37,13 +36,26 @@ namespace BackendPermissions.Application.Interface
         /// <param name="lastName"></param>
         /// <param name="permissionType"></param>
         /// <returns></returns>
-        Task<PermissionsDTO> GetPermissionsByName(string name, string lastName, int permissionType);
+        Task<PermissionsDTO> GetPermissionsByName(string name, string lastName);
 
         /// <summary>
-        /// 
+        /// Get the permission type List filter by Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         Task<PermissionsDTO> GetPermissionsById(int id);
+
+        /// <summary>
+        /// Get the full permission type List
+        /// </summary>
+        /// <returns></returns>
+        Task<List<PermissionTypes>> GetPermissionTypes();
+
+        /// <summary>
+        /// Get the permission type List by Id
+        /// </summary>
+        /// <returns></returns>
+        Task<PermissionTypes> GetPermissionTypeById(int id);
+
     }
 }

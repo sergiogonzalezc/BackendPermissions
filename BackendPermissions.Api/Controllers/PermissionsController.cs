@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Org.BouncyCastle.Utilities;
 using System.Configuration;
 using BackendPermissions.Application.Business;
+using MySqlX.XDevAPI.Common;
+using BackendPermissions.Common;
 
 namespace BackendPermissions.Api.Controllers
 {
@@ -19,7 +21,7 @@ namespace BackendPermissions.Api.Controllers
     {
         private readonly IPermissionsApplication _permissionsService;
         private readonly ILogger<PermissionsController> _logger;
-        
+
         private BackendPermissions.Api.Model.Error err = new BackendPermissions.Api.Model.Error
         {
             Codigo = StatusCodes.Status400BadRequest
@@ -63,6 +65,8 @@ namespace BackendPermissions.Api.Controllers
             }
             catch (ArgumentException arEx)
             {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, arEx, nameMethod, "Error!");
+
                 err.Codigo = StatusCodes.Status206PartialContent;
                 err.Mensaje = arEx.Message;
                 err.InformacionAdicional = arEx.ParamName;
@@ -77,6 +81,72 @@ namespace BackendPermissions.Api.Controllers
             }
             catch (Exception ex)
             {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, ex, nameMethod, "Error!");
+
+                err.Mensaje = ex.Message;
+                err.InformacionAdicional = ex.GetBaseException().Message;
+                //return BadRequest(err);
+
+                return new PermissionsModel
+                {
+                    Status = Common.Enum.EnumMessage.Error.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
+        }
+
+
+        [HttpGet]
+        [Route("GetPermissionById")]
+        [ProducesResponseType(typeof(BackendPermissions.Application.Model.Permissions), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [AllowAnonymous]
+        public async Task<PermissionsModel> GetPermissionById(int id)
+        {
+            string nameMethod = nameof(GetPermissions);
+            try
+            {
+                _logger.LogInformation("Start...");
+                PermissionsDTO result = await _permissionsService.GetPermissionsById(id);
+
+                // log message in kafka
+                _ = ProducerEventKafka.SendProducerEvent(Guid.NewGuid().ToString(), Common.Enum.CallType.Get.ToString());
+
+                var finalResult = new PermissionsModel
+                {
+                    Status = Common.Enum.EnumMessage.Succes.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Succes.ToString(),
+                    Success = true,
+                    Message = "ok",
+                    Data = result,
+                    DataList = null,
+                };
+
+                return finalResult;
+
+            }
+            catch (ArgumentException arEx)
+            {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, arEx, nameMethod, "Error!");
+
+                err.Codigo = StatusCodes.Status206PartialContent;
+                err.Mensaje = arEx.Message;
+                err.InformacionAdicional = arEx.ParamName;
+
+                return new PermissionsModel
+                {
+                    Status = Common.Enum.EnumMessage.Error.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
+                    Success = false,
+                    Message = arEx.Message
+                };
+            }
+            catch (Exception ex)
+            {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, ex, nameMethod, "Error!");
+
                 err.Mensaje = ex.Message;
                 err.InformacionAdicional = ex.GetBaseException().Message;
                 //return BadRequest(err);
@@ -99,32 +169,58 @@ namespace BackendPermissions.Api.Controllers
         [HttpPost]
         [Route("RequestPermission")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RequestPermission([FromBody] InputRequestPermission input)
+        [AllowAnonymous]
+        public async Task<RequestPermisionModel> RequestPermission([FromBody] InputRequestPermission input)
         {
+            string nameMethod = nameof(RequestPermission);
+
             try
             {
                 // log message in kafka
                 _ = ProducerEventKafka.SendProducerEvent(Guid.NewGuid().ToString(), Common.Enum.CallType.Request.ToString());
 
-                bool finalResult = await _permissionsService.ExistsPermissionByNameAndType(input.NombreEmpleado,input.ApellidoEmpleado,input.TipoPermiso);
+                bool permissionStatus = await _permissionsService.ExistsPermissionByNameAndType(input.NombreEmpleado, input.ApellidoEmpleado);
 
-                _logger.LogInformation($"Request Permission: {finalResult}");
+                var finalResult = new RequestPermisionModel
+                {
+                    Success = permissionStatus,
+                    Message = permissionStatus ? "ok" : "error",
+                    Data = null,
+                    DataList = null,
+                };
 
-                return Ok(finalResult);
+                return finalResult;
             }
             catch (ArgumentException arEx)
             {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, arEx, nameMethod, "Error!");
+
                 err.Codigo = StatusCodes.Status206PartialContent;
                 err.Mensaje = arEx.Message;
                 err.InformacionAdicional = arEx.ParamName;
-                return StatusCode(StatusCodes.Status206PartialContent, err);
+
+                return new RequestPermisionModel
+                {
+                    Status = Common.Enum.EnumMessage.Error.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
+                    Success = false,
+                    Message = arEx.Message
+                };
             }
             catch (Exception ex)
             {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, ex, nameMethod, "Error!");
+
                 err.Mensaje = ex.Message;
                 err.InformacionAdicional = ex.GetBaseException().Message;
-                return BadRequest(err);
+
+                return new RequestPermisionModel
+                {
+                    Status = Common.Enum.EnumMessage.Error.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
+                    Success = false,
+                    Message = ex.Message
+                };
             }
         }
 
@@ -138,8 +234,11 @@ namespace BackendPermissions.Api.Controllers
         [Route("ModifyPermission")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [AllowAnonymous]
         public async Task<IActionResult> ModifyPermission([FromBody] InputModifyPermission input)
         {
+            string nameMethod = nameof(ModifyPermission);
+
             try
             {
                 // log message in kafka
@@ -161,6 +260,8 @@ namespace BackendPermissions.Api.Controllers
             }
             catch (ArgumentException arEx)
             {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, arEx, nameMethod, "Error!");
+
                 err.Codigo = StatusCodes.Status206PartialContent;
                 err.Mensaje = arEx.Message;
                 err.InformacionAdicional = arEx.ParamName;
@@ -168,13 +269,143 @@ namespace BackendPermissions.Api.Controllers
             }
             catch (Exception ex)
             {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, ex, nameMethod, "Error!");
+
                 err.Mensaje = ex.Message;
                 err.InformacionAdicional = ex.GetBaseException().Message;
                 return BadRequest(err);
             }
         }
 
+        /// <summary>
+        /// Get the full permission type List
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("GetPermissionTypes")]
+        [ProducesResponseType(typeof(List<BackendPermissions.Application.Model.PermissionTypes>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [AllowAnonymous]
+        public async Task<PermissionTypesModel> GetPermissionTypes()
+        {
+            string nameMethod = nameof(GetPermissionTypes);
+            try
+            {
+                _logger.LogInformation("Start...");
+                List<PermissionTypes> result = await _permissionsService.GetPermissionTypes();
 
+                var finalResult = new PermissionTypesModel
+                {
+                    Status = Common.Enum.EnumMessage.Succes.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Succes.ToString(),
+                    Success = true,
+                    Message = "ok",
+                    DataList = result,
+                };
+
+                return finalResult;
+
+            }
+            catch (ArgumentException arEx)
+            {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, arEx, nameMethod, "Error!");
+
+                err.Codigo = StatusCodes.Status206PartialContent;
+                err.Mensaje = arEx.Message;
+                err.InformacionAdicional = arEx.ParamName;
+
+                return new PermissionTypesModel
+                {
+                    Status = Common.Enum.EnumMessage.Error.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
+                    Success = false,
+                    Message = arEx.Message
+                };
+            }
+            catch (Exception ex)
+            {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, ex, nameMethod, "Error!");
+
+                err.Mensaje = ex.Message;
+                err.InformacionAdicional = ex.GetBaseException().Message;
+                //return BadRequest(err);
+
+                return new PermissionTypesModel
+                {
+                    Status = Common.Enum.EnumMessage.Error.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
+        }
+
+
+        /// <summary>
+        /// Get the permission type List by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("GetPermissionTypeById")]
+        [ProducesResponseType(typeof(BackendPermissions.Application.Model.PermissionTypes), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [AllowAnonymous]
+        public async Task<PermissionTypesModel> GetPermissionTypeById(int id)
+        {
+            string nameMethod = nameof(GetPermissionTypes);
+            try
+            {
+                _logger.LogInformation("Start...");
+                PermissionTypes result = await _permissionsService.GetPermissionTypeById(id);
+                                
+                var finalResult = new PermissionTypesModel
+                {
+                    Status = Common.Enum.EnumMessage.Succes.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Succes.ToString(),
+                    Success = true,
+                    Message = "ok",
+                    Data = result,
+                };
+
+                return finalResult;
+
+            }
+            catch (ArgumentException arEx)
+            {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, arEx, nameMethod, "Error!");
+
+                err.Codigo = StatusCodes.Status206PartialContent;
+                err.Mensaje = arEx.Message;
+                err.InformacionAdicional = arEx.ParamName;
+
+                return new PermissionTypesModel
+                {
+                    Status = Common.Enum.EnumMessage.Error.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
+                    Success = false,
+                    Message = arEx.Message
+                };
+            }
+            catch (Exception ex)
+            {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, ex, nameMethod, "Error!");
+
+                err.Mensaje = ex.Message;
+                err.InformacionAdicional = ex.GetBaseException().Message;
+                //return BadRequest(err);
+
+                return new PermissionTypesModel
+                {
+                    Status = Common.Enum.EnumMessage.Error.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
+
+        }
 
         /// <summary>
         /// Insert a new Permission
@@ -185,13 +416,11 @@ namespace BackendPermissions.Api.Controllers
         [Route("InsertNewPermission")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [AllowAnonymous]
         public async Task<IActionResult> InsertNewPermission([FromBody] InputCreatePermission input)
         {
             try
             {
-                // log message in kafka
-                _ = ProducerEventKafka.SendProducerEvent(Guid.NewGuid().ToString(), Common.Enum.CallType.NewInsertPermission.ToString());
-
                 bool finalResult = await _permissionsService.InsertNewPermission(new InputCreatePermission()
                 {
                     NombreEmpleado = input.NombreEmpleado,
@@ -201,13 +430,14 @@ namespace BackendPermissions.Api.Controllers
                 }
                 );
 
-
                 _logger.LogInformation($"Insert New Permission: {finalResult}");
 
                 return Ok(finalResult);
             }
             catch (ArgumentException arEx)
             {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, arEx, nameof(InsertNewPermission), "Error!");
+
                 err.Codigo = StatusCodes.Status206PartialContent;
                 err.Mensaje = arEx.Message;
                 err.InformacionAdicional = arEx.ParamName;
@@ -215,6 +445,8 @@ namespace BackendPermissions.Api.Controllers
             }
             catch (Exception ex)
             {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, ex, nameof(InsertNewPermission), "Error!");
+
                 err.Mensaje = ex.Message;
                 err.InformacionAdicional = ex.GetBaseException().Message;
                 return BadRequest(err);

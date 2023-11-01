@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using BackendPermissions.DTO;
+using System.ComponentModel.DataAnnotations;
 
 namespace BackendPermissions.Application.Model
 {
-    public class InputRequestPermission
+    public class RequestPermissionDTO
     {
-        public string NombreEmpleado { get; set; }
-        public string ApellidoEmpleado { get; set; } 
+        public bool PermissionOk{ get; set; }
+
+        public DateTime FechaPermiso { get; set; }
+
     }
 }

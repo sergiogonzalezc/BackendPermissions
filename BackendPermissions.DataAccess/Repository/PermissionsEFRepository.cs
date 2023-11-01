@@ -123,11 +123,11 @@ namespace BackendPermissions.Infraestructura.Repository
         /// <param name="lastName"></param>
         /// <param name="permissionType"></param>
         /// <returns></returns>
-        public async Task<bool> ExistsPermissionByNameAndType(string name, string lastName, int permissionType)
+        public async Task<bool> ExistsPermissionByNameAndType(string name, string lastName)
         {
             List<PermissionsEF>? dataBD = await _dataBaseDBContext.Permissions.Where(x => x.NombreEmpleado.ToUpper().Equals(name.ToUpper())
                                                                                     && x.ApellidoEmpleado.ToUpper().Equals(lastName.ToUpper())
-                                                                                    && x.TipoPermiso.Equals(permissionType)
+                                                                                    //&& x.TipoPermiso.Equals(permissionType)
                                                                                     ).ToListAsync();
             if (dataBD == null || dataBD.Count == 0)
                 return false;
@@ -142,12 +142,12 @@ namespace BackendPermissions.Infraestructura.Repository
         /// <param name="lastName"></param>
         /// <param name="permissionType"></param>
         /// <returns></returns>
-        public async Task<PermissionsDTO> GetPermissionsByName(string name, string lastName, int permissionType)
+        public async Task<PermissionsDTO> GetPermissionsByName(string name, string lastName/*, int permissionType*/)
         {
             // Take the last record 
             PermissionsEF? dataBD = await _dataBaseDBContext.Permissions.Where(x => x.NombreEmpleado.ToUpper().Equals(name.ToUpper())
                                                                                     && x.ApellidoEmpleado.ToUpper().Equals(lastName.ToUpper())
-                                                                                    && x.TipoPermiso.Equals(permissionType)
+                                                                                    //&& x.TipoPermiso.Equals(permissionType)
                                                                                     ).OrderByDescending(x => x.Id).Take(1).SingleOrDefaultAsync();
 
             if (dataBD == null)
@@ -168,7 +168,7 @@ namespace BackendPermissions.Infraestructura.Repository
         }
 
         /// <summary>
-        /// 
+        /// Get the permission type List filter by Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -195,10 +195,28 @@ namespace BackendPermissions.Infraestructura.Repository
         }
 
         /// <summary>
+        /// Get the full permission type List
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<PermissionTypes>> GetPermissionTypes()
+        {
+           List<PermissionTypesEF>? dataBD = await _dataBaseDBContext.PermissionTypes.ToListAsync();
+
+            if (dataBD == null)
+                return null;
+
+            // Se mapea el objeto
+            List<PermissionTypes> resultModel = _mapper.Map<List<PermissionTypes>>(dataBD);
+            
+            return resultModel;
+        }
+
+
+        /// <summary>
         /// Get the Permission Type By Id
         /// </summary>
         /// <returns></returns>
-        public async Task<PermissionTypeDTO> GetPermissionTypeById(int id)
+        public async Task<PermissionTypes> GetPermissionTypeById(int id)
         {
             PermissionTypesEF? dataBD = await _dataBaseDBContext.PermissionTypes.Where(x => x.Id == id).SingleOrDefaultAsync();
 
@@ -208,12 +226,9 @@ namespace BackendPermissions.Infraestructura.Repository
             // Se mapea el objeto
             PermissionTypes result = _mapper.Map<PermissionTypes>(dataBD);
 
-            PermissionTypeDTO item = new PermissionTypeDTO();
-            item.Id = result.Id;
-            item.Descripcion = result.Descripcion;
-
-            return item;
+            return result;
         }
+
 
         #endregion
 

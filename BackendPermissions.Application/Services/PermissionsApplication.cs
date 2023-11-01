@@ -34,12 +34,12 @@ namespace BackendPermissions.Application.Services
         /// <exception cref="Exception"></exception>
         public async Task<bool> RequestPermission(InputRequestPermission input)
         {
-            bool result = await ExistsPermissionByNameAndType(input.NombreEmpleado, input.ApellidoEmpleado, input.TipoPermiso);
+            bool result = await ExistsPermissionByNameAndType(input.NombreEmpleado, input.ApellidoEmpleado);
 
             if (result)
                 return result;
             else
-                throw new Exception(string.Format("Permisson {0} does not exists for employee {0}!", input.TipoPermiso, input.NombreEmpleado));
+                throw new Exception(string.Format("Permisson does not exists for employee {0}!", input.NombreEmpleado));
         }
 
         /// <summary>
@@ -56,10 +56,10 @@ namespace BackendPermissions.Application.Services
                 NombreEmpleado = input.NombreEmpleado,
                 ApellidoEmpleado = input.ApellidoEmpleado,
                 TipoPermiso = input.TipoPermiso,
-                FechaPermiso = input.FechaPermiso,
+                FechaPermiso = Convert.ToDateTime(input.FechaPermiso),
             };
 
-            if (!ExistsPermissionByNameAndType(newPermission.NombreEmpleado, newPermission.ApellidoEmpleado, newPermission.TipoPermiso).Result)
+            if (!ExistsPermissionByNameAndType(newPermission.NombreEmpleado, newPermission.ApellidoEmpleado).Result)
             {
                 result = await _permissionsRepository.InsertPermissions(newPermission);
                 if (!result)
@@ -87,8 +87,8 @@ namespace BackendPermissions.Application.Services
                 Id = input.Id,
                 NombreEmpleado = input.NombreEmpleado,
                 ApellidoEmpleado = input.ApellidoEmpleado,
-                TipoPermiso = input.TipoPermiso,
-                FechaPermiso = input.FechaPermiso,
+                TipoPermiso = input.TipoPermiso.Value,
+                FechaPermiso = Convert.ToDateTime(input.FechaPermiso),
             };
 
             var item = await _permissionsRepository.GetPermissionsById(dataPermission.Id);
@@ -100,7 +100,7 @@ namespace BackendPermissions.Application.Services
             else
             {
                 // We validate the Permission Type Id
-                var permissionTypeObject = await _permissionsRepository.GetPermissionTypeById(input.TipoPermiso);
+                var permissionTypeObject = await _permissionsRepository.GetPermissionTypeById(input.TipoPermiso.Value);
                 if (permissionTypeObject != null)
                 {
                     result = await _permissionsRepository.ModifyPermissions(dataPermission);
@@ -131,9 +131,9 @@ namespace BackendPermissions.Application.Services
         /// <param name="lastName"></param>
         /// <param name="permissionType"></param>
         /// <returns></returns>
-        public async Task<bool> ExistsPermissionByNameAndType(string name, string lastName, int permissionType)
+        public async Task<bool> ExistsPermissionByNameAndType(string name, string lastName)
         {
-            return await _permissionsRepository.ExistsPermissionByNameAndType(name, lastName, permissionType);
+            return await _permissionsRepository.ExistsPermissionByNameAndType(name, lastName);
         }
 
 
@@ -144,19 +144,38 @@ namespace BackendPermissions.Application.Services
         /// <param name="lastName"></param>
         /// <param name="permissionType"></param>
         /// <returns></returns>
-        public Task<PermissionsDTO> GetPermissionsByName(string name, string lastName, int permissionType)
+        public Task<PermissionsDTO> GetPermissionsByName(string name, string lastName)
         {
-            return _permissionsRepository.GetPermissionsByName(name, lastName, permissionType);
+            return _permissionsRepository.GetPermissionsByName(name, lastName);
         }
 
         /// <summary>
-        /// 
+        /// Get the permission type List filter by Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         public Task<PermissionsDTO> GetPermissionsById(int id)
         {
             return _permissionsRepository.GetPermissionsById(id);
+        }
+
+        /// <summary>
+        /// Get the full permission type List
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<PermissionTypes>> GetPermissionTypes()
+        {
+            return await _permissionsRepository.GetPermissionTypes();
+        }
+
+
+        /// <summary>
+        /// Get the permission type List by Id
+        /// </summary>
+        /// <returns></returns>
+        public async Task<PermissionTypes> GetPermissionTypeById(int id)
+        {
+            return await _permissionsRepository.GetPermissionTypeById(id);
         }
     }
 }

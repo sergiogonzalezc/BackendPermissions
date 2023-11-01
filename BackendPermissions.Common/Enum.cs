@@ -23,8 +23,7 @@ namespace BackendPermissions.Common
         {
             Get,
             Request,
-            Modify,
-            NewInsertPermission
+            Modify            
         }
     }
 }

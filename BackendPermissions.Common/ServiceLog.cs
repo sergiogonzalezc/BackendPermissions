@@ -14,6 +14,13 @@ namespace BackendPermissions.Common
     /// </summary>
     public class ServiceLog
     {
+        /// <summary>
+        /// Weite a local file log using Nlog
+        /// </summary>
+        /// <param name="logType"></param>
+        /// <param name="ex"></param>
+        /// <param name="category"></param>
+        /// <param name="message"></param>
         public static void Write(LogType logType, Exception ex, string category, string message)
         {
             NLog.Logger l = null;
