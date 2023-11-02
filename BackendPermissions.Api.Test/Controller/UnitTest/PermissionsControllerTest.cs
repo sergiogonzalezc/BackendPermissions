@@ -16,6 +16,7 @@ using BackendPermissions.Application.Model;
 using Microsoft.EntityFrameworkCore;
 using BackendPermissions.Api.Model;
 using Moq;
+using MediatR;
 
 namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
 {
@@ -23,6 +24,7 @@ namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
     {
         private readonly IPermissionsApplication _permissionsApplication;
         private readonly ILogger<PermissionsController> _logger;
+        private readonly IMediator _mediator;
 
         public PermissionsControllerTest()
         {
@@ -38,7 +40,7 @@ namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
         private async Task GetPermissions_ReturnOK()
         {
             /// Arrange
-            var controller = new PermissionsController(_permissionsApplication, _logger);
+            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator);
 
             /// Act
             var result = await controller.GetPermissions();
@@ -85,7 +87,7 @@ namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
             //mockPermissionsApplication.Setup(x => x.GetPermissions()).Returns(mockReview);
 
             /// Arrange
-            var controller = new PermissionsController(_permissionsApplication, _logger);
+            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator);
 
             /// Act
             var result = await controller.GetPermissions();
@@ -105,7 +107,7 @@ namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
             // DbContextOptionsBuilder<AppDbContext> optionsBuilder = new();
 
             /// Arrange
-            var controller = new PermissionsController(_permissionsApplication, _logger);
+            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator);
 
             /// Act
             var result = await controller.GetPermissions();
@@ -120,7 +122,7 @@ namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
         private async Task GetPermissions_RequestPermission_ReturnOK()
         {
             /// Arrange                        
-            var controller = new PermissionsController(_permissionsApplication, _logger);
+            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator);
 
             InputRequestPermission input = new InputRequestPermission
             {
@@ -146,7 +148,7 @@ namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
 
             var logger = A.Fake<ILogger<PermissionsController>>();
 
-            var controller = new PermissionsController(_permissionsApplication, _logger);
+            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator);
 
             InputModifyPermission input = new InputModifyPermission
             {

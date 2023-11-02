@@ -12,6 +12,9 @@ using System.Configuration;
 using BackendPermissions.Application.Business;
 using MySqlX.XDevAPI.Common;
 using BackendPermissions.Common;
+using System.ComponentModel.Design;
+using MediatR;
+using BackendPermissions.Application.Querys;
 
 namespace BackendPermissions.Api.Controllers
 {
@@ -21,17 +24,19 @@ namespace BackendPermissions.Api.Controllers
     {
         private readonly IPermissionsApplication _permissionsService;
         private readonly ILogger<PermissionsController> _logger;
+        private readonly IMediator _mediator;
 
         private BackendPermissions.Api.Model.Error err = new BackendPermissions.Api.Model.Error
         {
             Codigo = StatusCodes.Status400BadRequest
         };
 
-        public PermissionsController(IPermissionsApplication permissionsServices, ILogger<PermissionsController> logger)
+        public PermissionsController(IPermissionsApplication permissionsServices, ILogger<PermissionsController> logger, IMediator mediator)
         {
             _permissionsService = permissionsServices;
             _logger = logger;
             //_producer = producer;
+            _mediator = mediator;
         }
 
 
@@ -45,6 +50,9 @@ namespace BackendPermissions.Api.Controllers
             string nameMethod = nameof(GetPermissions);
             try
             {
+                //var query = new GetPermissionsQuerys();
+                //List<PermissionsDTO> result = await _mediator.Send(query);
+
                 _logger.LogInformation("Start...");
                 List<PermissionsDTO> result = await _permissionsService.GetPermissions();
 
@@ -359,7 +367,7 @@ namespace BackendPermissions.Api.Controllers
             {
                 _logger.LogInformation("Start...");
                 PermissionTypes result = await _permissionsService.GetPermissionTypeById(id);
-                                
+
                 var finalResult = new PermissionTypesModel
                 {
                     Status = Common.Enum.EnumMessage.Succes.ToString(),
@@ -421,7 +429,7 @@ namespace BackendPermissions.Api.Controllers
         {
             try
             {
-                bool finalResult = await _permissionsService.InsertNewPermission(new InputCreatePermission()
+                ResultInsertPermissionDTO finalResult = await _permissionsService.InsertNewPermission(new InputCreatePermission()
                 {
                     NombreEmpleado = input.NombreEmpleado,
                     ApellidoEmpleado = input.ApellidoEmpleado,
@@ -430,9 +438,13 @@ namespace BackendPermissions.Api.Controllers
                 }
                 );
 
+                if (finalResult == null)
+                    return BadRequest(finalResult);
+
                 _logger.LogInformation($"Insert New Permission: {finalResult}");
 
                 return Ok(finalResult);
+
             }
             catch (ArgumentException arEx)
             {

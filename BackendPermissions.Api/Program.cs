@@ -19,6 +19,7 @@ using System.Reflection;
 using BackendPermissions.Common;
 using Confluent.Kafka;
 using static Confluent.Kafka.ConfigPropertyNames;
+using MediatR;
 
 namespace BackendPermissions.Api
 {
@@ -50,6 +51,8 @@ namespace BackendPermissions.Api
             {
                 options.Filters.Add<ErrorHandlingFilterAttribute>();
             });
+
+            builder.Services.AddMediatR(typeof(Program).Assembly);
 
             builder.Services.AddHsts(options =>
             {

@@ -6,7 +6,7 @@ namespace BackendPermissions.Application.Interface
     {
         Task<bool> RequestPermission(InputRequestPermission input);
 
-        Task<bool> InsertNewPermission(InputCreatePermission input);
+        Task<ResultInsertPermissionDTO> InsertNewPermission(InputCreatePermission input);
 
 
         /// <summary>

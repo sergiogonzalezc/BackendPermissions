@@ -48,7 +48,7 @@ namespace BackendPermissions.Application.Services
         /// <param name="input"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> InsertNewPermission(InputCreatePermission input)
+        public async Task<ResultInsertPermissionDTO> InsertNewPermission(InputCreatePermission input)
         {
             bool result = false;
             Permissions newPermission = new Permissions
@@ -63,12 +63,27 @@ namespace BackendPermissions.Application.Services
             {
                 result = await _permissionsRepository.InsertPermissions(newPermission);
                 if (!result)
-                    throw new Exception("No se pudo crear el registro, intente nuevamente");
+                {
+                    return new ResultInsertPermissionDTO
+                    {
+                        Success = true,
+                        ErrorMessage = "No se pudo crear el registro, intente nuevamente"
+                    };
+                }                
 
-                return result;
+                return new ResultInsertPermissionDTO
+                {
+                    Success = true,
+                    ErrorMessage = null
+                };
             }
             else
-                throw new Exception("Registro duplicado!");
+                return new ResultInsertPermissionDTO
+                {
+                    Success = false,
+                    ErrorMessage = "Registro duplicado!"
+                };
+            
         }
 
 
