@@ -23,7 +23,7 @@ namespace BackendPermissions.Api.Model
                     //context.Exception.Source,
                     //ExceptionType = context.Exception.GetType().FullName,
 
-                Title = "Error no contrado",
+                Title = "Error no controlado",
                 Status = (int)HttpStatusCode.InternalServerError
             };
 
