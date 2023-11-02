@@ -52,7 +52,7 @@ namespace BackendPermissions.Api
                 options.Filters.Add<ErrorHandlingFilterAttribute>();
             });
 
-            builder.Services.AddMediatR(typeof(Program).Assembly);
+            //builder.Services.AddMediatR(typeof(Program).Assembly);
 
             builder.Services.AddHsts(options =>
             {
