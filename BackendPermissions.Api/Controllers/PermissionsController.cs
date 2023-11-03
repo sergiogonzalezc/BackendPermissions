@@ -18,6 +18,10 @@ using BackendPermissions.Application.Querys;
 using Microsoft.AspNetCore.Cors;
 using BackendPermissions.Application.Commands;
 using BackendPermissions.Application.Handlers;
+using Nest;
+using MySqlX.XDevAPI;
+using System;
+using Confluent.Kafka;
 
 namespace BackendPermissions.Api.Controllers
 {
@@ -29,18 +33,20 @@ namespace BackendPermissions.Api.Controllers
         private readonly IPermissionsApplication _permissionsService;
         private readonly ILogger<PermissionsController> _logger;
         private readonly IMediator _mediator;
+        private readonly ElasticClient _elasticClient;
 
         private BackendPermissions.Api.Model.Error err = new BackendPermissions.Api.Model.Error
         {
             Codigo = StatusCodes.Status400BadRequest
         };
 
-        public PermissionsController(IPermissionsApplication permissionsServices, ILogger<PermissionsController> logger, IMediator mediator)
+        public PermissionsController(IPermissionsApplication permissionsServices, ILogger<PermissionsController> logger, IMediator mediator, ElasticClient elasticClient)
         {
             _permissionsService = permissionsServices;
             _logger = logger;
             //_producer = producer;
             _mediator = mediator;
+            _elasticClient = elasticClient;
         }
 
 
@@ -55,6 +61,11 @@ namespace BackendPermissions.Api.Controllers
             try
             {
                 _logger.LogInformation("Start...");
+
+                //var response = _elasticClient.Indices.Create(IndexName,
+                //    index => index.Map<ElasticsearchDocument>(
+                //        x => x.AutoMap()
+                //    ));
 
                 // Implement a CQRS for query/command responsibility segregation
                 var query = new GetPermissionsQuerys();
@@ -121,7 +132,7 @@ namespace BackendPermissions.Api.Controllers
             try
             {
                 _logger.LogInformation("Start...");
-
+                
                 // Implement a CQRS for query/command responsibility segregation
                 var query = new GetPermissionByIdQuerys(id);
                 PermissionsDTO result = await _mediator.Send(query);
@@ -438,6 +449,22 @@ namespace BackendPermissions.Api.Controllers
         {
             try
             {
+                var asyncIndexResponse = await _elasticClient.IndexDocumentAsync(input);
+
+                var searchResponse = _elasticClient.Search<PermissionsDTO>(s => s
+                                        .AllIndices()
+                                        .From(0)
+                                        .Size(10)
+                                        .Query(q => q
+                                             .Match(m => m
+                                                .Field(f => f.NombreEmpleado)
+                                                .Query("Luis")
+                                             )
+                                        )
+                                    );
+
+                var people = searchResponse.Documents;
+
                 // Implement a CQRS for query/command responsibility segregation
 
                 var query = new InsertNewPermissionCommand(input);

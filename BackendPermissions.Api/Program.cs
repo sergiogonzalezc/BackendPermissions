@@ -21,6 +21,8 @@ using Confluent.Kafka;
 using static Confluent.Kafka.ConfigPropertyNames;
 using MediatR;
 using Autofac.Core;
+using Elasticsearch.Net;
+using Nest;
 
 namespace BackendPermissions.Api
 {
@@ -70,6 +72,13 @@ namespace BackendPermissions.Api
 
             builder.Services.AddOptions();
 
+            var pool = new SingleNodeConnectionPool(new Uri("http://localhost:9200"));
+            var settings = new ConnectionSettings(pool).DefaultIndex("permision-index");
+            var client = new ElasticClient(settings);
+            builder.Services.AddSingleton(client);
+
+            //builder.Services.AddControllersWithViews();
+
             var app = builder.Build();
 
             // define culture spanish CL
@@ -88,9 +97,9 @@ namespace BackendPermissions.Api
             });
 
             app.UseCors(option =>
-            {                
-                option.WithOrigins("http://127.0.0.1:5173");                
-                option.WithOrigins("http://127.0.0.1:8001");
+            {
+                option.WithOrigins("http://127.0.0.1:5173");
+                option.WithOrigins("http://127.0.0.1:8081");
                 option.WithOrigins("http://127.0.0.1:8082");
                 option.WithOrigins("http://localhost:5173");
                 option.WithOrigins("http://localhost:8081");
@@ -133,6 +142,7 @@ namespace BackendPermissions.Api
 
             app.MapControllers();
             app.UseCors();
+
             app.Run();
 
 
