@@ -8,14 +8,8 @@ using System.Threading.Tasks;
 
 namespace BackendPermissions.Application.Querys
 {
-    public class GetPermissionByIdQuerys : IRequest<PermissionsDTO>
+    public record GetPermissionTypesQuerys : IRequest<List<PermissionTypes>>
     {
-        public int id { get; }
-
-        public GetPermissionByIdQuerys(int id)
-        {
-            this.id = id;
-        }
 
     }
 }

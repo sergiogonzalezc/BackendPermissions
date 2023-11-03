@@ -16,6 +16,8 @@ using System.ComponentModel.Design;
 using MediatR;
 using BackendPermissions.Application.Querys;
 using Microsoft.AspNetCore.Cors;
+using BackendPermissions.Application.Commands;
+using BackendPermissions.Application.Handlers;
 
 namespace BackendPermissions.Api.Controllers
 {
@@ -52,11 +54,11 @@ namespace BackendPermissions.Api.Controllers
             string nameMethod = nameof(GetPermissions);
             try
             {
-                //var query = new GetPermissionsQuerys();
-                //List<PermissionsDTO> result = await _mediator.Send(query);
-
                 _logger.LogInformation("Start...");
-                List<PermissionsDTO> result = await _permissionsService.GetPermissions();
+
+                // Implement a CQRS for query/command responsibility segregation
+                var query = new GetPermissionsQuerys();
+                List<PermissionsDTO> result = await _mediator.Send(query);
 
                 // log message in kafka
                 _ = ProducerEventKafka.SendProducerEvent(Guid.NewGuid().ToString(), Common.Enum.CallType.Get.ToString());
@@ -67,7 +69,7 @@ namespace BackendPermissions.Api.Controllers
                     SubStatus = Common.Enum.EnumMessage.Succes.ToString(),
                     Success = true,
                     Message = "ok",
-                    DataList = result,
+                    DataList = result.ToList(),
                 };
 
                 return finalResult;
@@ -119,7 +121,10 @@ namespace BackendPermissions.Api.Controllers
             try
             {
                 _logger.LogInformation("Start...");
-                PermissionsDTO result = await _permissionsService.GetPermissionsById(id);
+
+                // Implement a CQRS for query/command responsibility segregation
+                var query = new GetPermissionByIdQuerys(id);
+                PermissionsDTO result = await _mediator.Send(query);
 
                 // log message in kafka
                 _ = ProducerEventKafka.SendProducerEvent(Guid.NewGuid().ToString(), Common.Enum.CallType.Get.ToString());
@@ -186,10 +191,12 @@ namespace BackendPermissions.Api.Controllers
 
             try
             {
+                // Implement a CQRS for query/command responsibility segregation
+                var query = new InsertPermissionCommand(input.NombreEmpleado, input.ApellidoEmpleado);
+                bool permissionStatus = await _mediator.Send(query);
+
                 // log message in kafka
                 _ = ProducerEventKafka.SendProducerEvent(Guid.NewGuid().ToString(), Common.Enum.CallType.Request.ToString());
-
-                bool permissionStatus = await _permissionsService.ExistsPermissionByNameAndType(input.NombreEmpleado, input.ApellidoEmpleado);
 
                 var finalResult = new RequestPermisionModel
                 {
@@ -251,18 +258,12 @@ namespace BackendPermissions.Api.Controllers
 
             try
             {
+                // Implement a CQRS for query/command responsibility segregation
+                var query = new ModifyPermissionCommand(input);
+                bool result = await _mediator.Send(query);
+
                 // log message in kafka
                 _ = ProducerEventKafka.SendProducerEvent(Guid.NewGuid().ToString(), Common.Enum.CallType.Modify.ToString());
-
-                bool result = await _permissionsService.ModifyPermission(new InputModifyPermission()
-                {
-                    Id = input.Id,
-                    NombreEmpleado = input.NombreEmpleado,
-                    ApellidoEmpleado = input.ApellidoEmpleado,
-                    TipoPermiso = input.TipoPermiso,
-                    FechaPermiso = input.FechaPermiso,
-                }
-                );
 
                 _logger.LogInformation($"Modifiy: {result}");
 
@@ -303,7 +304,10 @@ namespace BackendPermissions.Api.Controllers
             try
             {
                 _logger.LogInformation("Start...");
-                List<PermissionTypes> result = await _permissionsService.GetPermissionTypes();
+
+                // Implement a CQRS for query/command responsibility segregation
+                var query = new GetPermissionTypesQuerys();
+                List<PermissionTypes> result = await _mediator.Send(query);
 
                 var finalResult = new PermissionTypesModel
                 {
@@ -368,7 +372,10 @@ namespace BackendPermissions.Api.Controllers
             try
             {
                 _logger.LogInformation("Start...");
-                PermissionTypes result = await _permissionsService.GetPermissionTypeById(id);
+
+                // Implement a CQRS for query/command responsibility segregation
+                var query = new GetPermissionTypeByIdQuerys(id);
+                PermissionTypes result = await _mediator.Send(query);
 
                 var finalResult = new PermissionTypesModel
                 {
@@ -431,21 +438,17 @@ namespace BackendPermissions.Api.Controllers
         {
             try
             {
-                ResultInsertPermissionDTO finalResult = await _permissionsService.InsertNewPermission(new InputCreatePermission()
-                {
-                    NombreEmpleado = input.NombreEmpleado,
-                    ApellidoEmpleado = input.ApellidoEmpleado,
-                    TipoPermiso = input.TipoPermiso,
-                    FechaPermiso = input.FechaPermiso,
-                }
-                );
+                // Implement a CQRS for query/command responsibility segregation
 
-                if (finalResult == null)
-                    return BadRequest(finalResult);
+                var query = new InsertNewPermissionCommand(input);
+                ResultInsertPermissionDTO result = await _mediator.Send(query);
 
-                _logger.LogInformation($"Insert New Permission: {finalResult}");
+                if (result == null)
+                    return BadRequest(result);
 
-                return Ok(finalResult);
+                _logger.LogInformation($"Insert New Permission: {result}");
+
+                return Ok(result);
 
             }
             catch (ArgumentException arEx)

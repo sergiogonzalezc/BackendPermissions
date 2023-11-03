@@ -20,6 +20,7 @@ using BackendPermissions.Common;
 using Confluent.Kafka;
 using static Confluent.Kafka.ConfigPropertyNames;
 using MediatR;
+using Autofac.Core;
 
 namespace BackendPermissions.Api
 {
@@ -40,6 +41,8 @@ namespace BackendPermissions.Api
             // Add services to the container.
             builder.Services.AddScoped<IPermissionsApplication, PermissionsApplication>();
             builder.Services.AddScoped<IPermissionsRepository, PermissionsEFRepository>();
+            builder.Services.AddScoped(typeof(IPermissionsApplication), typeof(PermissionsApplication));
+            builder.Services.AddScoped(typeof(IPermissionsRepository), typeof(PermissionsEFRepository));
 
             builder.Services.AddCors();
             builder.Services.AddControllers();
@@ -52,14 +55,21 @@ namespace BackendPermissions.Api
                 options.Filters.Add<ErrorHandlingFilterAttribute>();
             });
 
-            builder.Services.AddMediatR(typeof(Program).Assembly);
+            //builder.Services.AddMediatR(typeof(Program).Assembly);
+            //builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assembly));
+            }
 
             builder.Services.AddHsts(options =>
             {
                 options.MaxAge = TimeSpan.FromDays(365);
                 options.IncludeSubDomains = true;
             });
-            
+
+            builder.Services.AddOptions();
+
             var app = builder.Build();
 
             // define culture spanish CL

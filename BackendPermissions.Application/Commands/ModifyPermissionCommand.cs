@@ -6,10 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackendPermissions.Application.Querys
+namespace BackendPermissions.Application.Commands
 {
-    public record GetPermissionsQuerys: IRequest<List<PermissionsDTO>>
+    public record ModifyPermissionCommand(InputModifyPermission input) : IRequest<bool>
     {
-
     }
 }

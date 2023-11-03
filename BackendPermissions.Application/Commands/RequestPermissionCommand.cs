@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BackendPermissions.Application.Commands
 {
-    internal class RequestPermissionCommand
+    public record InsertPermissionCommand(string NombreEmpleado, string ApellidoEmpleado) : IRequest<bool>
     {
     }
 }
