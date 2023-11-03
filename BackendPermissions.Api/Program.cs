@@ -79,11 +79,15 @@ namespace BackendPermissions.Api
 
             app.UseCors(option =>
             {
-                //option.WithOrigins("http://127.0.0.1:5188");
-                //option.WithOrigins("http://127.0.0.1:5173");
-                //option.WithOrigins("http://localhost:5173");
-                //option.WithOrigins("http://localhost:8000");
-                option.AllowAnyOrigin();
+                option.WithOrigins("http://127.0.0.1:8000");
+                option.WithOrigins("http://127.0.0.1:5173");
+                option.WithOrigins("http://127.0.0.1:8081");
+                option.WithOrigins("http://127.0.0.1:8085");
+                option.WithOrigins("http://localhost:5173");
+                option.WithOrigins("http://localhost:8081");
+                option.WithOrigins("http://localhost:8085");
+                option.WithOrigins("http://localhost:8000");
+                //option.AllowAnyOrigin();
                 option.AllowAnyMethod();
                 option.AllowAnyHeader();
             });
@@ -119,7 +123,7 @@ namespace BackendPermissions.Api
             app.UseHttpsRedirection();
 
             app.MapControllers();
-
+            app.UseCors();
             app.Run();
 
 

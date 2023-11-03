@@ -15,11 +15,13 @@ using BackendPermissions.Common;
 using System.ComponentModel.Design;
 using MediatR;
 using BackendPermissions.Application.Querys;
+using Microsoft.AspNetCore.Cors;
 
 namespace BackendPermissions.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors]
     public class PermissionsController : ControllerBase
     {
         private readonly IPermissionsApplication _permissionsService;
