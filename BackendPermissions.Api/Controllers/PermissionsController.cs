@@ -188,28 +188,28 @@ namespace BackendPermissions.Api.Controllers
         }
 
         /// <summary>
-        /// Request a Permission
+        /// Validate a Permission
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("RequestPermission")]
+        [Route("ValidatePermission")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [AllowAnonymous]
-        public async Task<RequestPermisionModel> RequestPermission([FromBody] InputRequestPermission input)
+        public async Task<ValidatePermisionModel> ValidatePermission([FromBody] InputRequestPermission input)
         {
-            string nameMethod = nameof(RequestPermission);
+            string nameMethod = nameof(ValidatePermission);
 
             try
             {
                 // Implement a CQRS for query/command responsibility segregation
-                var query = new InsertPermissionCommand(input.NombreEmpleado, input.ApellidoEmpleado);
+                var query = new GetValidatePermissionQuery(input.NombreEmpleado, input.ApellidoEmpleado);
                 bool permissionStatus = await _mediator.Send(query);
 
                 // log message in kafka
                 _ = ProducerEventKafka.SendProducerEvent(Guid.NewGuid().ToString(), Common.Enum.CallType.Request.ToString());
 
-                var finalResult = new RequestPermisionModel
+                var finalResult = new ValidatePermisionModel
                 {
                     Success = permissionStatus,
                     Message = permissionStatus ? "ok" : "error",
@@ -227,7 +227,7 @@ namespace BackendPermissions.Api.Controllers
                 err.Mensaje = arEx.Message;
                 err.InformacionAdicional = arEx.ParamName;
 
-                return new RequestPermisionModel
+                return new ValidatePermisionModel
                 {
                     Status = Common.Enum.EnumMessage.Error.ToString(),
                     SubStatus = Common.Enum.EnumMessage.Error.ToString(),
@@ -242,7 +242,7 @@ namespace BackendPermissions.Api.Controllers
                 err.Mensaje = ex.Message;
                 err.InformacionAdicional = ex.GetBaseException().Message;
 
-                return new RequestPermisionModel
+                return new ValidatePermisionModel
                 {
                     Status = Common.Enum.EnumMessage.Error.ToString(),
                     SubStatus = Common.Enum.EnumMessage.Error.ToString(),

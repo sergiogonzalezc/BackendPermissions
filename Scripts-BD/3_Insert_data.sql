@@ -1,3 +1,5 @@
+USE [BD_Challenge_Permission]
+GO
 -- SGC: Start Insert Example data
 insert into [dbo].[PermissionTypes] (Descripcion) values ('Admin')
 insert into [dbo].[PermissionTypes] (Descripcion) values ('User')
