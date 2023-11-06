@@ -14,7 +14,7 @@ namespace BackendPermissions.Application.Model
         public string NombreEmpleado { get; set; }
         public string ApellidoEmpleado { get; set; }
 
-        public int? TipoPermiso { get; set; }
+        public int TipoPermiso { get; set; }
 
         public string FechaPermiso { get; set; }
 

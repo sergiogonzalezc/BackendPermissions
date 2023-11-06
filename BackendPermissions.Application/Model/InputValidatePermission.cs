@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BackendPermissions.Application.Model
 {
-    public class InputRequestPermission
+    public class InputValidatePermission
     {
         public string NombreEmpleado { get; set; }
         public string ApellidoEmpleado { get; set; } 

@@ -23,6 +23,8 @@ using MediatR;
 using Autofac.Core;
 using Elasticsearch.Net;
 using Nest;
+using MySqlX.XDevAPI;
+using BackendPermissions.Application.Model;
 
 namespace BackendPermissions.Api
 {
@@ -73,8 +75,11 @@ namespace BackendPermissions.Api
             builder.Services.AddOptions();
 
             var pool = new SingleNodeConnectionPool(new Uri("http://localhost:9200"));
-            var settings = new ConnectionSettings(pool).DefaultIndex("permision-index");
+            var settings = new ConnectionSettings(pool).DefaultIndex("permission");
+            settings.BasicAuthentication("elastic", "+vd0tF3IkZTu91tOCH+O");
+            settings.EnableApiVersioningHeader();
             var client = new ElasticClient(settings);
+            var indexResponse = client.Index(typeof(PermissionsIndex),i => i.Index("permission"));
             builder.Services.AddSingleton(client);
 
             //builder.Services.AddControllersWithViews();

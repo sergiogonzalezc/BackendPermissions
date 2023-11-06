@@ -22,6 +22,7 @@ using Nest;
 using MySqlX.XDevAPI;
 using System;
 using Confluent.Kafka;
+using Azure;
 
 namespace BackendPermissions.Api.Controllers
 {
@@ -61,11 +62,6 @@ namespace BackendPermissions.Api.Controllers
             try
             {
                 _logger.LogInformation("Start...");
-
-                //var response = _elasticClient.Indices.Create(IndexName,
-                //    index => index.Map<ElasticsearchDocument>(
-                //        x => x.AutoMap()
-                //    ));
 
                 // Implement a CQRS for query/command responsibility segregation
                 var query = new GetPermissionsQuerys();
@@ -121,6 +117,107 @@ namespace BackendPermissions.Api.Controllers
         }
 
 
+        /// <summary>
+        /// Request Permission
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("RequestPermission")]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(RequestPermisionModel), StatusCodes.Status200OK)]
+        [AllowAnonymous]
+        public async Task<RequestPermisionModel> RequestPermission([FromBody] InputCreatePermission input)
+        {
+            string nameMethod = nameof(RequestPermission);
+            try
+            {               
+                // Implement a CQRS for query/command responsibility segregation, including Adding to Elastic Search Index
+
+                var query = new RequestPermissionCommand(input);
+                ResultRequestPermissionDTO result = await _mediator.Send(query);
+
+                // log message in kafka
+                _ = ProducerEventKafka.SendProducerEvent(Guid.NewGuid().ToString(), Common.Enum.CallType.Request.ToString());
+
+                _logger.LogInformation($"Request Permission: {result}");
+
+                RequestPermisionModel finalResult = null;
+
+                if (result == null)
+                {
+                    finalResult = new RequestPermisionModel
+                    {
+                        Status = Common.Enum.EnumMessage.Succes.ToString(),
+                        SubStatus = Common.Enum.EnumMessage.Succes.ToString(),
+                        Success = (result == null ? false : result.Success),
+                        Message = (result == null ? "error" : (result?.ErrorMessage == null ? "" : result?.ErrorMessage)),
+                        Data = null,
+                        DataList = null,
+                    };
+                }
+                if (!result.Success)
+                {
+                    finalResult = new RequestPermisionModel
+                    {
+                        Status = Common.Enum.EnumMessage.Succes.ToString(),
+                        SubStatus = Common.Enum.EnumMessage.Succes.ToString(),
+                        Success = (result == null ? false : result.Success),
+                        Message = (result == null ? "error" : (result?.ErrorMessage == null ? "" : result?.ErrorMessage)),
+                        Data = null,
+                        DataList = null,
+                    };
+                }
+                else                
+                {
+                    finalResult = new RequestPermisionModel
+                    {
+                        Status = Common.Enum.EnumMessage.Succes.ToString(),
+                        SubStatus = Common.Enum.EnumMessage.Succes.ToString(),
+                        Success = result.Success,
+                        Message = result.ErrorMessage,
+                        Data = result,
+                        DataList = null,
+                    };
+                }
+
+                return finalResult;
+            }
+            catch (ArgumentException arEx)
+            {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, arEx, nameMethod, "Error!");
+
+                err.Codigo = StatusCodes.Status206PartialContent;
+                err.Mensaje = arEx.Message;
+                err.InformacionAdicional = arEx.ParamName;
+
+                return new RequestPermisionModel
+                {
+                    Status = Common.Enum.EnumMessage.Error.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
+                    Success = false,
+                    Message = arEx.Message
+                };
+            }
+            catch (Exception ex)
+            {
+                ServiceLog.Write(Common.Enum.LogType.WebSite, ex, nameMethod, "Error!");
+
+                err.Mensaje = ex.Message;
+                err.InformacionAdicional = ex.GetBaseException().Message;
+                //return BadRequest(err);
+
+                return new RequestPermisionModel
+                {
+                    Status = Common.Enum.EnumMessage.Error.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
+        }
+
         [HttpGet]
         [Route("GetPermissionById")]
         [ProducesResponseType(typeof(BackendPermissions.Application.Model.Permissions), StatusCodes.Status200OK)]
@@ -132,7 +229,7 @@ namespace BackendPermissions.Api.Controllers
             try
             {
                 _logger.LogInformation("Start...");
-                
+
                 // Implement a CQRS for query/command responsibility segregation
                 var query = new GetPermissionByIdQuerys(id);
                 PermissionsDTO result = await _mediator.Send(query);
@@ -178,71 +275,6 @@ namespace BackendPermissions.Api.Controllers
                 //return BadRequest(err);
 
                 return new PermissionsModel
-                {
-                    Status = Common.Enum.EnumMessage.Error.ToString(),
-                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
-                    Success = false,
-                    Message = ex.Message
-                };
-            }
-        }
-
-        /// <summary>
-        /// Validate a Permission
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("ValidatePermission")]
-        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
-        [AllowAnonymous]
-        public async Task<ValidatePermisionModel> ValidatePermission([FromBody] InputRequestPermission input)
-        {
-            string nameMethod = nameof(ValidatePermission);
-
-            try
-            {
-                // Implement a CQRS for query/command responsibility segregation
-                var query = new GetValidatePermissionQuery(input.NombreEmpleado, input.ApellidoEmpleado);
-                bool permissionStatus = await _mediator.Send(query);
-
-                // log message in kafka
-                _ = ProducerEventKafka.SendProducerEvent(Guid.NewGuid().ToString(), Common.Enum.CallType.Request.ToString());
-
-                var finalResult = new ValidatePermisionModel
-                {
-                    Success = permissionStatus,
-                    Message = permissionStatus ? "ok" : "error",
-                    Data = null,
-                    DataList = null,
-                };
-
-                return finalResult;
-            }
-            catch (ArgumentException arEx)
-            {
-                ServiceLog.Write(Common.Enum.LogType.WebSite, arEx, nameMethod, "Error!");
-
-                err.Codigo = StatusCodes.Status206PartialContent;
-                err.Mensaje = arEx.Message;
-                err.InformacionAdicional = arEx.ParamName;
-
-                return new ValidatePermisionModel
-                {
-                    Status = Common.Enum.EnumMessage.Error.ToString(),
-                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
-                    Success = false,
-                    Message = arEx.Message
-                };
-            }
-            catch (Exception ex)
-            {
-                ServiceLog.Write(Common.Enum.LogType.WebSite, ex, nameMethod, "Error!");
-
-                err.Mensaje = ex.Message;
-                err.InformacionAdicional = ex.GetBaseException().Message;
-
-                return new ValidatePermisionModel
                 {
                     Status = Common.Enum.EnumMessage.Error.ToString(),
                     SubStatus = Common.Enum.EnumMessage.Error.ToString(),
@@ -435,66 +467,70 @@ namespace BackendPermissions.Api.Controllers
 
         }
 
+
+
         /// <summary>
-        /// Insert a new Permission
+        /// Validate a Permission
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("InsertNewPermission")]
+        [Route("ValidatePermission")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [AllowAnonymous]
-        public async Task<IActionResult> InsertNewPermission([FromBody] InputCreatePermission input)
+        public async Task<ValidatePermisionModel> ValidatePermission([FromBody] InputValidatePermission input)
         {
+            string nameMethod = nameof(ValidatePermission);
+
             try
             {
-                var asyncIndexResponse = await _elasticClient.IndexDocumentAsync(input);
-
-                var searchResponse = _elasticClient.Search<PermissionsDTO>(s => s
-                                        .AllIndices()
-                                        .From(0)
-                                        .Size(10)
-                                        .Query(q => q
-                                             .Match(m => m
-                                                .Field(f => f.NombreEmpleado)
-                                                .Query("Luis")
-                                             )
-                                        )
-                                    );
-
-                var people = searchResponse.Documents;
-
                 // Implement a CQRS for query/command responsibility segregation
+                var query = new GetValidatePermissionQuery(input.NombreEmpleado, input.ApellidoEmpleado);
+                bool permissionStatus = await _mediator.Send(query);
 
-                var query = new InsertNewPermissionCommand(input);
-                ResultInsertPermissionDTO result = await _mediator.Send(query);
+                var finalResult = new ValidatePermisionModel
+                {
+                    Success = permissionStatus,
+                    Message = permissionStatus ? "ok" : "error",
+                    Data = null,
+                    DataList = null,
+                };
 
-                if (result == null)
-                    return BadRequest(result);
-
-                _logger.LogInformation($"Insert New Permission: {result}");
-
-                return Ok(result);
-
+                return finalResult;
             }
             catch (ArgumentException arEx)
             {
-                ServiceLog.Write(Common.Enum.LogType.WebSite, arEx, nameof(InsertNewPermission), "Error!");
+                ServiceLog.Write(Common.Enum.LogType.WebSite, arEx, nameMethod, "Error!");
 
                 err.Codigo = StatusCodes.Status206PartialContent;
                 err.Mensaje = arEx.Message;
                 err.InformacionAdicional = arEx.ParamName;
-                return StatusCode(StatusCodes.Status206PartialContent, err);
+
+                return new ValidatePermisionModel
+                {
+                    Status = Common.Enum.EnumMessage.Error.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
+                    Success = false,
+                    Message = arEx.Message
+                };
             }
             catch (Exception ex)
             {
-                ServiceLog.Write(Common.Enum.LogType.WebSite, ex, nameof(InsertNewPermission), "Error!");
+                ServiceLog.Write(Common.Enum.LogType.WebSite, ex, nameMethod, "Error!");
 
                 err.Mensaje = ex.Message;
                 err.InformacionAdicional = ex.GetBaseException().Message;
-                return BadRequest(err);
+
+                return new ValidatePermisionModel
+                {
+                    Status = Common.Enum.EnumMessage.Error.ToString(),
+                    SubStatus = Common.Enum.EnumMessage.Error.ToString(),
+                    Success = false,
+                    Message = ex.Message
+                };
             }
         }
+
+
     }
 }

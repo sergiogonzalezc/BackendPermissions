@@ -1,4 +1,5 @@
-﻿using BackendPermissions.Application.Interface;
+﻿using BackendPermissions.Application.Commands;
+using BackendPermissions.Application.Interface;
 using BackendPermissions.Application.Model;
 using BackendPermissions.Application.Querys;
 using MediatR;
@@ -11,24 +12,21 @@ using System.Threading.Tasks;
 
 namespace BackendPermissions.Application.Handlers
 {
-    /// <summary>
-    /// Implement a CQRS handler 
-    /// </summary>
-    public class GetPermissionsHandler : IRequestHandler<GetPermissionsQuerys, List<PermissionsDTO>>
+    public class RequestPermissionHandler : IRequestHandler<RequestPermissionCommand, ResultRequestPermissionDTO>
     {
         private readonly IPermissionsApplication _permissionsService;
         private readonly ElasticClient _elasticClient;
 
-        public GetPermissionsHandler(IPermissionsApplication permissionsApplication, ElasticClient elasticClient)
+        public RequestPermissionHandler(IPermissionsApplication permissionsApplication, ElasticClient elasticClient)
         {
             _permissionsService = permissionsApplication;
             _elasticClient = elasticClient;
         }
 
-        public async Task<List<PermissionsDTO>> Handle(GetPermissionsQuerys request, CancellationToken cancellationToken)
+        public async Task<ResultRequestPermissionDTO> Handle(RequestPermissionCommand request, CancellationToken cancellationToken)
         {
-            return await _permissionsService.GetPermissions(_elasticClient);
+            return await _permissionsService.RequestPermission(_elasticClient, request.input);
         }
-
     }
 }
+

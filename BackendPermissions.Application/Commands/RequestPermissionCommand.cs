@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using BackendPermissions.Application.Model;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BackendPermissions.Application.Commands
 {
-    public record InsertPermissionCommand(string NombreEmpleado, string ApellidoEmpleado) : IRequest<bool>
+    public record RequestPermissionCommand(InputCreatePermission input) : IRequest<ResultRequestPermissionDTO>
     {
     }
 }

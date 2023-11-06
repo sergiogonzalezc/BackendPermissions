@@ -1,25 +1,26 @@
 ﻿using BackendPermissions.Application.Model;
+using Nest;
 
 namespace BackendPermissions.Application.Interface
 {
     public interface IPermissionsApplication
     {
-        Task<bool> RequestPermission(InputRequestPermission input);
+        Task<bool> GetValidatePermission(InputValidatePermission input);
 
-        Task<ResultInsertPermissionDTO> InsertNewPermission(InputCreatePermission input);
+        public Task<ResultRequestPermissionDTO> RequestPermission(ElasticClient elasticClient, InputCreatePermission input);
 
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        Task<bool> ModifyPermission(InputModifyPermission input);
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        Task<List<PermissionsDTO>> GetPermissions();
+        Task<bool> ModifyPermission(ElasticClient elasticClient, InputModifyPermission input);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        Task<List<PermissionsDTO>> GetPermissions(ElasticClient elasticClient);
 
         /// <summary>
         /// Validate if exists te same permission for the employee

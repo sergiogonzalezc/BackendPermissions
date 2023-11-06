@@ -6,11 +6,14 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using BackendPermissions.Application.Business;
 using BackendPermissions.Application.ConfiguracionApi;
 using BackendPermissions.Application.Interface;
 using BackendPermissions.Application.Model;
+using BackendPermissions.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Nest;
 using static BackendPermissions.Common.Enum;
 
 namespace BackendPermissions.Application.Services
@@ -32,7 +35,7 @@ namespace BackendPermissions.Application.Services
         /// <param name="input"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> RequestPermission(InputRequestPermission input)
+        public async Task<bool> GetValidatePermission(InputValidatePermission input)
         {
             bool result = await ExistsPermissionByNameAndType(input.NombreEmpleado, input.ApellidoEmpleado);
 
@@ -43,47 +46,88 @@ namespace BackendPermissions.Application.Services
         }
 
         /// <summary>
-        /// Insert a un record of Permission in BD
+        /// Insert a un record of Request Permission in BD
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<ResultInsertPermissionDTO> InsertNewPermission(InputCreatePermission input)
+        public async Task<ResultRequestPermissionDTO> RequestPermission(ElasticClient elasticClient, InputCreatePermission input)
         {
+            string nameMethod = nameof(RequestPermission);
+
             bool result = false;
             Permissions newPermission = new Permissions
             {
                 NombreEmpleado = input.NombreEmpleado,
                 ApellidoEmpleado = input.ApellidoEmpleado,
                 TipoPermiso = input.TipoPermiso,
-                FechaPermiso = Convert.ToDateTime(input.FechaPermiso),
+                FechaPermiso = DateTime.Now,
             };
 
             if (!ExistsPermissionByNameAndType(newPermission.NombreEmpleado, newPermission.ApellidoEmpleado).Result)
             {
                 result = await _permissionsRepository.InsertPermissions(newPermission);
+
+                #region "ElasticSearch Service"
+                try
+                {
+                    //ElasticSearchService elasticsearchService = new ElasticSearchService(elasticClient, "permission");                    
+                    //await elasticsearchService.CreateIndexIfNotExists("permission");
+                    //                    var asyncIndexResponse = await elasticsearchService.AddOrUpdate(newPermission);
+
+                    //var resultList = await elasticsearchService.GetAll<dynamic>();
+
+                    var asyncIndexResponse = await elasticClient.IndexDocumentAsync(newPermission);
+
+                    if (asyncIndexResponse.IsValid)
+                    {
+                        ServiceLog.Write(Common.Enum.LogType.WebSite, System.Diagnostics.TraceLevel.Info, nameMethod, $"Index document with ID {asyncIndexResponse.Id} succeeded.");
+
+                        // validate                        
+                        var searchResponse2 = ElasticSearchService.CustomSearchEvent(elasticClient);
+                        //var searchResponse = elasticClient.Search<PermissionsIndex>(s => s
+                        //                   .AllIndices());
+                    }
+                    else
+                    {
+                        // Handle errors
+                        var debugInfo = asyncIndexResponse.DebugInformation;
+                        var error = asyncIndexResponse.ServerError?.Error;
+                    }
+                }
+                catch (Exception er)
+                {
+                    // Error Add elastic value to index
+                    //return new ResultRequestPermissionDTO
+                    //{
+                    //    Success = false,
+                    //    ErrorMessage = "Error indexing in elasticsearch index!"
+                    //};
+                }
+                #endregion
+
                 if (!result)
                 {
-                    return new ResultInsertPermissionDTO
+                    return new ResultRequestPermissionDTO
                     {
                         Success = true,
                         ErrorMessage = "No se pudo crear el registro, intente nuevamente"
                     };
-                }                
+                }
 
-                return new ResultInsertPermissionDTO
+                return new ResultRequestPermissionDTO
                 {
                     Success = true,
                     ErrorMessage = null
                 };
             }
             else
-                return new ResultInsertPermissionDTO
+                return new ResultRequestPermissionDTO
                 {
                     Success = false,
                     ErrorMessage = "Registro duplicado!"
                 };
-            
+
         }
 
 
@@ -94,17 +138,45 @@ namespace BackendPermissions.Application.Services
         /// <param name="input"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> ModifyPermission(InputModifyPermission input)
+        public async Task<bool> ModifyPermission(ElasticClient elasticClient, InputModifyPermission input)
         {
+            string nameMethod = nameof(RequestPermission);
+
             bool result = false;
             Permissions dataPermission = new Permissions
             {
                 Id = input.Id,
                 NombreEmpleado = input.NombreEmpleado,
                 ApellidoEmpleado = input.ApellidoEmpleado,
-                TipoPermiso = input.TipoPermiso.Value,
+                TipoPermiso = input.TipoPermiso,
                 FechaPermiso = Convert.ToDateTime(input.FechaPermiso),
             };
+
+            #region "ElasticSearch Service"
+            try
+            {
+                var asyncIndexResponse = await elasticClient.IndexDocumentAsync(input);
+
+                if (asyncIndexResponse.IsValid)
+                {
+                    ServiceLog.Write(Common.Enum.LogType.WebSite, System.Diagnostics.TraceLevel.Info, nameMethod, $"Index document with ID {asyncIndexResponse.Id} succeeded.");
+
+                    // validate                        
+                    var searchResponse2 = ElasticSearchService.CustomSearchEvent(elasticClient);                  
+                }
+                else
+                {
+                    // Handle errors
+                    var debugInfo = asyncIndexResponse.DebugInformation;
+                    var error = asyncIndexResponse.ServerError?.Error;
+                }
+            }
+            catch (Exception er)
+            {
+                // Error Add elastic value to index
+                
+            }
+            #endregion
 
             var item = await _permissionsRepository.GetPermissionsById(dataPermission.Id);
 
@@ -115,7 +187,7 @@ namespace BackendPermissions.Application.Services
             else
             {
                 // We validate the Permission Type Id
-                var permissionTypeObject = await _permissionsRepository.GetPermissionTypeById(input.TipoPermiso.Value);
+                var permissionTypeObject = await _permissionsRepository.GetPermissionTypeById(input.TipoPermiso);
                 if (permissionTypeObject != null)
                 {
                     result = await _permissionsRepository.ModifyPermissions(dataPermission);
@@ -129,8 +201,9 @@ namespace BackendPermissions.Application.Services
 
 
 
-        public async Task<List<PermissionsDTO>> GetPermissions()
+        public async Task<List<PermissionsDTO>> GetPermissions(ElasticClient elasticClient)
         {
+
             List<PermissionsDTO> resultado = new List<PermissionsDTO>();
             resultado = await _permissionsRepository.GetPermissions();
             //if (resultado.Count == 0)

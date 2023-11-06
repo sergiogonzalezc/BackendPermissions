@@ -7,9 +7,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BackendPermissions.Application.Model
 {
-    public class RequestPermissionDTO
+    public class PermissionsIndex
     {
-        public bool PermissionOk{ get; set; }
+        public int Id { get; set; }
+
+        public string NombreEmpleado { get; set; }
+        public string ApellidoEmpleado { get; set; }
+
+        public int TipoPermiso { get; set; }
 
         public DateTime FechaPermiso { get; set; }
 

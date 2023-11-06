@@ -2,7 +2,7 @@
 
 namespace BackendPermissions.Api.Model
 {
-    public class RequestPermisionModel : GenericBaseModel<RequestPermissionDTO>
+    public class RequestPermisionModel : GenericBaseModel<ResultRequestPermissionDTO>
     {
     }
 }
