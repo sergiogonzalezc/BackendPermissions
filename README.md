@@ -11,7 +11,7 @@ Para ejecutar el backend en modo **DEBUG**, se debe tener instalado:
 - [.Net 7x SDK]
 - [VS 2022 Community Edition]
 
-## Edición de cadena de conexión:##
+## Edición de cadena de conexión: ##
 Debe ir al archivo **appsettings.json** y deberá editar la **cadenaConexion**, Valores los verá con **XXXXXX**.
 - Server Host
 - Server Port
@@ -33,7 +33,7 @@ Principales dependencias:
 - [NLOG]
 - [Confluent.Kafka]
 
-## Proyecto compatible para crear imagen Docker. Pasos para crear imagen:##
+## Proyecto compatible para crear imagen Docker. Pasos para crear imagen: ##
 - [1] Inicar "Docker Desktop for Windows" v4.25.
 
 - [2] Abrir Windows Explorer. Debe ubicarse en el path donde está el archivo **.sln**, abrir **Developer Powershell Visual Studio Community Edition 2022** y ejecutar:
@@ -51,16 +51,16 @@ Principales dependencias:
 
 - [6] El contenedor se iniciará en el puerto **18000**. Para validar: abrir al browser en **http://localhost:18000/swagger/index.html** debería ver la lista de métodos expuestos para verificar usando **swagger**.
 
-## Configuración Kafka:##
+## Configuración Kafka: ##
 - Para producir mensajes **Kafka**, debe tener ejecutando Kafka en el puerto **9092** (localhost:9092), y el **topic** es **permission_challenge**
 
 - Para verificar los mensajes **Kafka** del **topic** **permission_challenge**, puede usar el software **Conduktor** 
 
-## Configuración ElasticSearch:##
+## Configuración ElasticSearch: ##
 
-- Para poder crear índices en **ElasticSearch**, debe iniciarlo en el puerto **9200**, por ejemplo **http://localhost:9200*
+- Para poder crear índices en **ElasticSearch**, debe iniciarlo en el puerto **9200**, por ejemplo **http://localhost:9200**
     
-- La clase "Program" del proyecto "BackendPermissions.Api" define el usuario y contraseña de acceso para **ElasticSearch**. En caso que no acceda por error de autenticación, deberá cambiar la **contraseña** utilizando el comando "elasticsearch-reset-password.bat" 
+- La clase "Program" del proyecto **BackendPermissions.Api** define el **usuario** y **contraseña** de acceso para **ElasticSearch**. En caso que no acceda por error de autenticación, deberá cambiar la **contraseña** utilizando el comando "elasticsearch-reset-password.bat" 
 
 - El índice por defecto se llama **permission**.
 
@@ -82,7 +82,7 @@ To run the backend in **DEBUG** mode, you must have installed:
 - [.Net 7x SDK]
 - [VS 2022 Community Edition]
 
-## Connection string edit:##
+## Connection string: ##
 You must go to the **appsettings.json** file and you must edit the **connectionstring**, you will see the values with **XXXXXX**.
 -Server Host
 - Server Port
@@ -104,7 +104,7 @@ Main dependencies:
 - [NLOG]
 - [Confluent.Kafka]
 
-## Supported project to create Docker image. Steps to create image:##
+## Supported project to create Docker image. Steps to create image: ##
 - [1] Start "Docker Desktop for Windows" v4.25.
 
 - [2] Open Windows Explorer. You must go to the path where the **.sln** file is, open **Developer Powershell Visual Studio Community Edition 2022** and execute:
@@ -122,16 +122,16 @@ Main dependencies:
 
 - [6] The container will be started on port **18000**. To validate: open the browser at **http://localhost:18000/swagger/index.html** you should see the list of exposed methods to verify using **swagger**.
 
-## Kafka configuration:##
+## Kafka configuration: ##
 - To produce **Kafka** messages, you must have Kafka running on port **9092** (localhost:9092), and the **topic** is **permission_challenge**
 
 - To check **Kafka** messages from **topic** **permission_challenge**, you can use **Conduktor** software
 
-## ElasticSearch configuration:##
+## ElasticSearch configuration: ##
 
-- In order to create indexes on **ElasticSearch**, you must start it on port **9200**, for example **http://localhost:9200*
+- In order to create indexes on **ElasticSearch**, you must start it on port **9200**, for example **http://localhost:9200**
     
-- The "Program" class of the "BackendPermissions.Api" project defines the access user and password for **ElasticSearch**. If you do not log in due to an authentication error, you must change the **password** using the command "elasticsearch-reset-password.bat"
+- The "Program" class of the **BackendPermissions.Api** project defines the access **user** and **password** for **ElasticSearch**. If you do not log in due to an authentication error, you must change the **password** using the command "elasticsearch-reset-password.bat"
 
 - The default index is called **permission**.
 
