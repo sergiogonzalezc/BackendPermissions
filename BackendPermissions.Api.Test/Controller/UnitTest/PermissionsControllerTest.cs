@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using BackendPermissions.Api.Model;
 using Moq;
 using MediatR;
+using Nest;
 
 namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
 {
@@ -25,11 +26,13 @@ namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
         private readonly IPermissionsApplication _permissionsApplication;
         private readonly ILogger<PermissionsController> _logger;
         private readonly IMediator _mediator;
+        private readonly ElasticClient _elasticClient;
 
         public PermissionsControllerTest()
         {
             _permissionsApplication = A.Fake<IPermissionsApplication>();
             _logger = A.Fake<ILogger<PermissionsController>>();
+            _elasticClient = A.Fake<ElasticClient>();
         }
 
         /// <summary>
@@ -40,7 +43,7 @@ namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
         private async Task GetPermissions_ReturnOK()
         {
             /// Arrange
-            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator);
+            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator, _elasticClient);
 
             /// Act
             var result = await controller.GetPermissions();
@@ -87,7 +90,7 @@ namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
             //mockPermissionsApplication.Setup(x => x.GetPermissions()).Returns(mockReview);
 
             /// Arrange
-            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator);
+            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator, _elasticClient);
 
             /// Act
             var result = await controller.GetPermissions();
@@ -107,7 +110,7 @@ namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
             // DbContextOptionsBuilder<AppDbContext> optionsBuilder = new();
 
             /// Arrange
-            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator);
+            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator, _elasticClient);
 
             /// Act
             var result = await controller.GetPermissions();
@@ -122,13 +125,13 @@ namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
         private async Task GetPermissions_RequestPermission_ReturnOK()
         {
             /// Arrange                        
-            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator);
+            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator, _elasticClient);
 
-            InputRequestPermission input = new InputRequestPermission
+            InputCreatePermission input = new InputCreatePermission
             {
                 NombreEmpleado = "german",
                 ApellidoEmpleado = "gonzalez",
-                //poPermiso = 1
+                TipoPermiso = 1
             };
 
             /// Act
@@ -148,7 +151,7 @@ namespace BackendPermissions.Api.UnitTest.Controller.UnitTest
 
             var logger = A.Fake<ILogger<PermissionsController>>();
 
-            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator);
+            var controller = new PermissionsController(_permissionsApplication, _logger, _mediator, _elasticClient);
 
             InputModifyPermission input = new InputModifyPermission
             {
