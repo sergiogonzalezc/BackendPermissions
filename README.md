@@ -1,6 +1,6 @@
 # Configuración del proyecto Backend (español)
 
-## Configuración de la Base de Datos ####
+## Configuración de la Base de Datos ##
 Debe ejecutar los scripts que están en la carpeta **Scripts-BD* en SQL Server 2016 o superior (Express, Estandar, Enterprise, etc), en el orden señalado.
 - **Nota:** El script 1 crea una BD desde cero en la ubicación **C:\MSSQL_BD** la que debe de estar creada previamente. Si no está ejecutando SQL Server localmente, este paso lo puede omitir y pasar al script 2 y script 3.
 - **Script 2**: Crea sólo las tablas.
@@ -11,7 +11,7 @@ Para ejecutar el backend en modo **DEBUG**, se debe tener instalado:
 - [.Net 7x SDK]
 - [VS 2022 Community Edition]
 
-## Edición de cadena de conexión:
+## Edición de cadena de conexión:##
 Debe ir al archivo **appsettings.json** y deberá editar la **cadenaConexion**, Valores los verá con **XXXXXX**.
 - Server Host
 - Server Port
@@ -33,7 +33,7 @@ Principales dependencias:
 - [NLOG]
 - [Confluent.Kafka]
 
-## Proyecto compatible para crear imagen Docker. Pasos para crear imagen:
+## Proyecto compatible para crear imagen Docker. Pasos para crear imagen:##
 - [1] Inicar "Docker Desktop for Windows" v4.25.
 
 - [2] Abrir Windows Explorer. Debe ubicarse en el path donde está el archivo **.sln**, abrir **Developer Powershell Visual Studio Community Edition 2022** y ejecutar:
@@ -51,12 +51,12 @@ Principales dependencias:
 
 - [6] El contenedor se iniciará en el puerto **18000**. Para validar: abrir al browser en **http://localhost:18000/swagger/index.html** debería ver la lista de métodos expuestos para verificar usando **swagger**.
 
-## Configuración Kafka:
+## Configuración Kafka:##
 - Para producir mensajes **Kafka**, debe tener ejecutando Kafka en el puerto **9092** (localhost:9092), y el **topic** es **permission_challenge**
 
 - Para verificar los mensajes **Kafka** del **topic** **permission_challenge**, puede usar el software **Conduktor** 
 
-## Configuración ElasticSearch:
+## Configuración ElasticSearch:##
 
 - Para poder crear índices en **ElasticSearch**, debe iniciarlo en el puerto **9200**, por ejemplo **http://localhost:9200*
     
