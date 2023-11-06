@@ -1,8 +1,8 @@
 # Configuración del proyecto Backend (español)
 
 ## Configuración de la Base de Datos ##
-Debe ejecutar los scripts que están en la carpeta **Scripts-BD* en SQL Server 2016 o superior (Express, Estandar, Enterprise, etc), en el orden señalado.
-- **Nota:** El script 1 crea una BD desde cero en la ubicación **C:\MSSQL_BD** la que debe de estar creada previamente. Si no está ejecutando SQL Server localmente, este paso lo puede omitir y pasar al script 2 y script 3.
+Abrir SQL Server 2016 o superior (Express, Estandar, Enterprise, etc). Debe ejecutar los scripts que están en la carpeta **Scripts-BD** en el orden señalado (1, 2 y 3).
+- **Nota:** El **script 1** crea una BD desde cero en la ubicación **C:\MSSQL_BD** la que debe de estar creada previamente. Si no está ejecutando SQL Server localmente, este paso lo puede omitir y pasar al script 2 y script 3.
 - **Script 2**: Crea sólo las tablas.
 - **Script 3**: Crea sólo registros de ejemplo de permisos.
 
@@ -72,8 +72,8 @@ Principales dependencias:
 # Backend project configuration (English)
 
 ## Database Configuration ##
-You must execute the scripts that are in the **Scripts-BD* folder in SQL Server 2016 or higher (Express, Standard, Enterprise, etc.), in the order indicated.
-- **Note:** Script 1 creates a DB from scratch in the location **C:\MSSQL_BD** which must have been previously created. If you are not running SQL Server locally, you can skip this step and move on to script 2 and script 3.
+Open SQL Server 2016 or higher (Express, Standard, Enterprise, etc.). You must execute the scripts that are in the **Scripts-BD** folder in the order indicated (1, 2 and 3).
+- **Note:** **script 1** creates a DB from scratch in the location **C:\MSSQL_DB** which must have been previously created. If you are not running SQL Server locally, you can skip this step and move on to script 2 and script 3.
 - **Script 2**: Create only the tables.
 - **Script 3**: Create only example permission records.
 
