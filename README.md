@@ -66,3 +66,73 @@ Principales dependencias:
 
 - Fin.
 
+
+
+
+# Backend project configuration (English)
+
+## Database Configuration ##
+You must execute the scripts that are in the **Scripts-BD* folder in SQL Server 2016 or higher (Express, Standard, Enterprise, etc.), in the order indicated.
+- **Note:** Script 1 creates a DB from scratch in the location **C:\MSSQL_BD** which must have been previously created. If you are not running SQL Server locally, you can skip this step and move on to script 2 and script 3.
+- **Script 2**: Create only the tables.
+- **Script 3**: Create only example permission records.
+
+## Open project in Visual Studio ##
+To run the backend in **DEBUG** mode, you must have installed:
+- [.Net 7x SDK]
+- [VS 2022 Community Edition]
+
+## Connection string edit:##
+You must go to the **appsettings.json** file and you must edit the **connectionstring**, you will see the values with **XXXXXX**.
+-Server Host
+- Server Port
+- User
+- Password
+
+"connectionstring": "Server=**XXXXXX**,**XXXXXX**;Initial Catalog=BD_Challenge_Permission;User ID=**XXXXXX**;Password=**XXXXXX**;TrustServerCertificate=true"
+
+To start debugging, open **sln** solution and run F5:
+
+**Important:**
+Project type: Api .Net core
+
+Main dependencies:
+- [MediatR]
+- [Automapper]
+- [NEST]
+- [Swashbuckle.AspNetCore]
+- [NLOG]
+- [Confluent.Kafka]
+
+## Supported project to create Docker image. Steps to create image:##
+- [1] Start "Docker Desktop for Windows" v4.25.
+
+- [2] Open Windows Explorer. You must go to the path where the **.sln** file is, open **Developer Powershell Visual Studio Community Edition 2022** and execute:
+
+**docker image build -t backendchallenge:1.0 -f .\BackendPermissions.Api\Dockerfile .**
+
+- [3] Open "Docker for Desktop Windows", go to the image list and get the **"GUID"** of the newly created new image,
+  
+- [4] Create container from the previously created image, go to **Developer Powershell Visual Studio** and execute:
+
+   **docker container create backendpermissions-container -p 18000:8000 GUID**
+
+- [5] Start the container:
+   **docker container start backendpermissions-container**
+
+- [6] The container will be started on port **18000**. To validate: open the browser at **http://localhost:18000/swagger/index.html** you should see the list of exposed methods to verify using **swagger**.
+
+## Kafka configuration:##
+- To produce **Kafka** messages, you must have Kafka running on port **9092** (localhost:9092), and the **topic** is **permission_challenge**
+
+- To check **Kafka** messages from **topic** **permission_challenge**, you can use **Conduktor** software
+
+## ElasticSearch configuration:##
+
+- In order to create indexes on **ElasticSearch**, you must start it on port **9200**, for example **http://localhost:9200*
+    
+- The "Program" class of the "BackendPermissions.Api" project defines the access user and password for **ElasticSearch**. If you do not log in due to an authentication error, you must change the **password** using the command "elasticsearch-reset-password.bat"
+
+- The default index is called **permission**.
+
+- End.
