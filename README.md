@@ -3,7 +3,7 @@
 ## Configuración de la Base de Datos ##
 Abrir SQL Server 2016 o superior (Express, Estandar, Enterprise, etc). Debe ejecutar los scripts que están en la carpeta **Scripts-BD** en el orden señalado (1, 2 y 3).
 - **Nota:** **el script 1** crea un BD **BD_Challenge_Permission** desde cero. Es muy importante que previamente se debe crear la carpeta **C:\MSSQL_BD**. Si no está ejecutando SQL Server localmente y tiene SQL, por ejemplo, en un servidor no local o en la nube, puede omitir este paso e ir al script 2 y al script 3.
-- **Script 2**: Crea solo las tablas en la BD **BD_Challenge_Permission**.
+- **Script 2**: Crea sólo las tablas en la BD **BD_Challenge_Permission**. Para este paso debe asegúrese que exista la **BD_Challenge_Permission**, y exista el esquema **dbo**.
 - **Script 3**: cree solo registros de permisos de ejemplo.
 
 ## Abrir proyecto en Visual Studio ##
@@ -76,7 +76,7 @@ Principales dependencias:
 ## Database Configuration ##
 Open SQL Server 2016 or higher (Express, Standard, Enterprise, etc.). You must execute the scripts that are in the **Scripts-BD** folder in the order indicated (1, 2 and 3).
 - **Note:** **script 1** creates a DB from scratch in the location **C:\MSSQL_DB** which must have been previously created. If you are not running SQL Server locally, you can skip this step and move on to script 2 and script 3.
-- **Script 2**: Create only the tables in the DB BD_Challenge_Permission.
+- **Script 2**: Create only the tables in the DB **BD_Challenge_Permission**. For this step you must ensure that the **BD_Challenge_Permission** exists, and the **dbo** schema exists.
 - **Script 3**: Create only example permission records.
 
 ## Open project in Visual Studio ##
