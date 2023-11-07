@@ -112,7 +112,7 @@ Main dependencies:
 
 **The solution will start in port 8000:**
 
-## Supported project to create Docker image. Steps to create image: ##
+## Docker support: Steps to create image: ##
 - [1] Start "Docker Desktop for Windows" v4.25.
 
 - [2] Open Windows Explorer. You must go to the path where the **.sln** file is, open **Developer Powershell Visual Studio Community Edition 2022** and execute:
