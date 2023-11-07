@@ -2,9 +2,9 @@
 
 ## Configuración de la Base de Datos ##
 Abrir SQL Server 2016 o superior (Express, Estandar, Enterprise, etc). Debe ejecutar los scripts que están en la carpeta **Scripts-BD** en el orden señalado (1, 2 y 3).
-- **Nota:** El **script 1** crea una BD desde cero en la ubicación **C:\MSSQL_BD** la que debe de estar creada previamente. Si no está ejecutando SQL Server localmente, este paso lo puede omitir y pasar al script 2 y script 3.
-- **Script 2**: Crea sólo las tablas.
-- **Script 3**: Crea sólo registros de ejemplo de permisos.
+- **Note:** **script 1** creates a BD **BD_Challenge_Permission** from scratch. It is very important that **C:\MSSQL_BD** folder must be previously created. If you are not running SQL Server locally and you have the SQL, for example on a non-local server, or in the cloud, you can skip this step and go to script 2 and script 3.
+- **Script 2**: Creates only the tables in the DB **BD_Challenge_Permission**.
+- **Script 3**: Create only example permission records.
 
 ## Abrir proyecto en Visual Studio ##
 Para ejecutar el backend en modo **DEBUG**, se debe tener instalado:
@@ -12,9 +12,10 @@ Para ejecutar el backend en modo **DEBUG**, se debe tener instalado:
 - [VS 2022 Community Edition]
 
 ## Edición de cadena de conexión: ##
-Debe ir al archivo **appsettings.json** y deberá editar la **cadenaConexion**, Valores los verá con **XXXXXX**.
+Debe ir al archivo **appsettings.json** del proyecto **BackendPermissions.Api** y deberá editar la **cadenaConexion**, específicamente los valores marcados con **XXXXXX**:
+
 - Server Host
-- Server Port
+- Server Port (Si utiliza el puerto TCP 1433, puede evitar este parámetro o definir 1433 directamente.)
 - User
 - Password
 
@@ -83,9 +84,10 @@ To run the backend in **DEBUG** mode, you must have installed:
 - [VS 2022 Community Edition]
 
 ## Connection string: ##
-You must go to the **appsettings.json** file and you must edit the **connectionstring**, you will see the values with **XXXXXX**.
--Server Host
-- Server Port
+You need to go to the **appsettings.json** file of the **BackendPermissions.Api** project and you will need to edit the **connectionstring**, specifically the values marked with **XXXXXX**:
+
+- Server Host
+- Server Port (if you use TCP 1433 port, you can avoid this parameter, or define 1433 directly)
 - User
 - Password
 
