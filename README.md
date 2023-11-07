@@ -21,7 +21,8 @@ Debe ir al archivo **appsettings.json** del proyecto **BackendPermissions.Api** 
 
 "cadenaConexion": "Server=**XXXXXX**,**XXXXXX**;Initial Catalog=BD_Challenge_Permission;User ID=**XXXXXX**;Password=**XXXXXX**;TrustServerCertificate=true"
 
-Para iniciar la depuración, abrir solución **sln** y ejecutar F5:
+## Depuración: ##
+Depues de editar la cadena de conexión, puede iniciar la depuración. Debe abrir solución **sln** y ejecutar F5:
 
 **Importante:**
 Tipo de proyecto: Api .Net core 
@@ -93,7 +94,8 @@ You need to go to the **appsettings.json** file of the **BackendPermissions.Api*
 
 "connectionstring": "Server=**XXXXXX**,**XXXXXX**;Initial Catalog=BD_Challenge_Permission;User ID=**XXXXXX**;Password=**XXXXXX**;TrustServerCertificate=true"
 
-To start debugging, open **sln** solution and run F5:
+## Debugging: ##
+After editing the connection string, you can start debugging. You must open solution **sln** and execute F5:
 
 **Important:**
 Project type: Api .Net core
