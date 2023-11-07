@@ -2,9 +2,9 @@
 
 ## Configuración de la Base de Datos ##
 Abrir SQL Server 2016 o superior (Express, Estandar, Enterprise, etc). Debe ejecutar los scripts que están en la carpeta **Scripts-BD** en el orden señalado (1, 2 y 3).
-- **Note:** **script 1** creates a BD **BD_Challenge_Permission** from scratch. It is very important that **C:\MSSQL_BD** folder must be previously created. If you are not running SQL Server locally and you have the SQL, for example on a non-local server, or in the cloud, you can skip this step and go to script 2 and script 3.
-- **Script 2**: Creates only the tables in the DB **BD_Challenge_Permission**.
-- **Script 3**: Create only example permission records.
+- **Nota:** **el script 1** crea un BD **BD_Challenge_Permission** desde cero. Es muy importante que previamente se debe crear la carpeta **C:\MSSQL_BD**. Si no está ejecutando SQL Server localmente y tiene SQL, por ejemplo, en un servidor no local o en la nube, puede omitir este paso e ir al script 2 y al script 3.
+- **Script 2**: Crea solo las tablas en la BD **BD_Challenge_Permission**.
+- **Script 3**: cree solo registros de permisos de ejemplo.
 
 ## Abrir proyecto en Visual Studio ##
 Para ejecutar el backend en modo **DEBUG**, se debe tener instalado:
