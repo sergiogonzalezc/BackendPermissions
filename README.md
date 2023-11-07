@@ -76,7 +76,7 @@ Principales dependencias:
 ## Database Configuration ##
 Open SQL Server 2016 or higher (Express, Standard, Enterprise, etc.). You must execute the scripts that are in the **Scripts-BD** folder in the order indicated (1, 2 and 3).
 - **Note:** **script 1** creates a DB from scratch in the location **C:\MSSQL_DB** which must have been previously created. If you are not running SQL Server locally, you can skip this step and move on to script 2 and script 3.
-- **Script 2**: Create only the tables.
+- **Script 2**: Create only the tables in the DB BD_Challenge_Permission.
 - **Script 3**: Create only example permission records.
 
 ## Open project in Visual Studio ##
