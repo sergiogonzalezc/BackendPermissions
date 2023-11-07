@@ -22,7 +22,7 @@ Debe ir al archivo **appsettings.json** del proyecto **BackendPermissions.Api** 
 "cadenaConexion": "Server=**XXXXXX**,**XXXXXX**;Initial Catalog=BD_Challenge_Permission;User ID=**XXXXXX**;Password=**XXXXXX**;TrustServerCertificate=true"
 
 ## Depuración: ##
-Depues de editar la cadena de conexión, puede iniciar la depuración. Debe abrir solución **sln** y ejecutar F5:
+Después de editar la cadena de conexión, puede iniciar la depuración. Debe abrir solución **sln** y ejecutar F5:
 
 **Importante:**
 Tipo de proyecto: Api .Net core 
@@ -34,6 +34,8 @@ Principales dependencias:
 - [Swashbuckle.AspNetCore]
 - [NLOG]
 - [Confluent.Kafka]
+
+**La solution iniciará en el puerto 8000:**
 
 ## Proyecto compatible para crear imagen Docker. Pasos para crear imagen: ##
 - [1] Inicar "Docker Desktop for Windows" v4.25.
@@ -107,6 +109,8 @@ Main dependencies:
 - [Swashbuckle.AspNetCore]
 - [NLOG]
 - [Confluent.Kafka]
+
+**The solution will start in port 8000:**
 
 ## Supported project to create Docker image. Steps to create image: ##
 - [1] Start "Docker Desktop for Windows" v4.25.
